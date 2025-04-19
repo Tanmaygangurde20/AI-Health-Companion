@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Welcome, {{ patient.name }}</h2>
+        <p class="text-muted">Your Doctor: {{ patient.doctor.name if patient.doctor else 'Not assigned' }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Personal Information -->
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Personal Information</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Age:</strong> {{ patient.age }}</p>
+                <p><strong>Gender:</strong> {{ patient.gender }}</p>
+                <p><strong>Contact:</strong> {{ patient.contact }}</p>
+                <p><strong>Address:</strong> {{ patient.address }}</p>
+                <p><strong>Email:</strong> {{ patient.email or 'Not set' }}</p>
+                <p><strong>Premium Status:</strong> {{ 'Active' if patient.is_premium else 'Inactive' }}</p>
+                <a href="{{ url_for('patient.update_profile') }}" class="btn btn-sm btn-outline-primary mt-2">
+                    <i class="fas fa-edit"></i> Update Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prescriptions -->
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Prescriptions</h4>
+            </div>
+            <div class="card-body">
+                {% if prescriptions or follow_ups %}
+                    <div class="list-group">
+                        {% for prescription in prescriptions %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ prescription.medication }}</h6>
+                            <p class="mb-1"><small>Dosage: {{ prescription.dosage }}</small></p>
+                            <p class="mb-1"><small>Instructions: {{ prescription.instructions }}</small></p>
+                            <small class="text-muted">Date: {{ prescription.date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% endfor %}
+                        
+                        {% for follow_up in follow_ups %}
+                            {% if follow_up.medicines %}
+                                {% for medicine in follow_up.medicines %}
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">{{ medicine.name }}</h6>
+                                    <p class="mb-1"><small>Dosage: {{ medicine.dosage }}</small></p>
+                                    {% if medicine.notes %}
+                                    <p class="mb-1"><small>Notes: {{ medicine.notes }}</small></p>
+                                    {% endif %}
+                                    <small class="text-muted">Prescribed on: {{ follow_up.visit_date.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No prescriptions found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Follow-ups -->
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Follow-ups</h4>
+            </div>
+            <div class="card-body">
+                {% if follow_ups %}
+                    <div class="list-group">
+                        {% for follow_up in follow_ups %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">Follow-up Notes</h6>
+                            <p class="mb-1">{{ follow_up.notes }}</p>
+                            <small class="text-muted">Date: {{ follow_up.visit_date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No follow-ups found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if patient.is_premium %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Premium Features</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('patient.health_chatbot') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-robot"></i> Health Chatbot
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('patient.health_report') }}" class="btn btn-success w-100">
+                            <i class="fas fa-file-medical-alt"></i> Health Report Generator
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('patient.medicine_expiry_alerts') }}" class="btn btn-info w-100">
+                            <i class="fas fa-clock"></i> Medicine Expiry Alerts
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('patient.medication_alternatives') }}" class="btn btn-warning w-100">
+                            <i class="fas fa-pills"></i> Medication Alternatives
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

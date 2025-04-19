@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Welcome to Hospital Management System</h1>
+        <p class="lead mb-5">Please select your role to continue</p>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">👨‍⚕️ Doctor</h5>
+                        <p class="card-text">Access patient records and manage prescriptions</p>
+                        <a href="{{ url_for('main.role_login', role='doctor') }}" class="btn btn-primary">Login as Doctor</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">👩‍💼 Receptionist</h5>
+                        <p class="card-text">Manage doctors and patients</p>
+                        <a href="{{ url_for('main.role_login', role='receptionist') }}" class="btn btn-primary">Login as Receptionist</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">👤 Patient</h5>
+                        <p class="card-text">View your medical records and prescriptions</p>
+                        <a href="{{ url_for('main.role_login', role='patient') }}" class="btn btn-primary">Login as Patient</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

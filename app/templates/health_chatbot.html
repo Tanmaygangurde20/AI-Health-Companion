@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Health Chatbot{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>AI Health Assistant
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="chat-container" id="chatContainer" style="height: 400px; overflow-y: auto;">
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Welcome message -->
+                            <div class="message bot-message">
+                                <div class="message-content">
+                                    <p>Hello {{ patient.name }}! I'm your AI health assistant. I can help answer your health-related questions while considering your medical history. How can I assist you today?</p>
+                                    <small class="text-muted">Note: Always consult your doctor for serious medical concerns.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="chatForm" class="mt-3">
+                        <div class="input-group">
+                            <input type="text" id="userMessage" class="form-control" placeholder="Type your health-related question here..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-message {
+    align-items: flex-end;
+}
+
+.bot-message {
+    align-items: flex-start;
+}
+
+.message-content {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    position: relative;
+}
+
+.user-message .message-content {
+    background-color: #007bff;
+    color: white;
+}
+
+.bot-message .message-content {
+    background-color: white;
+    border: 1px solid #dee2e6;
+}
+
+.message-content p {
+    margin-bottom: 5px;
+}
+
+.message-content small {
+    font-size: 0.75rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const userMessage = document.getElementById('userMessage');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatContainer = document.getElementById('chatContainer');
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const message = userMessage.value.trim();
+        if (!message) return;
+
+        // Add user message to chat
+        addMessage(message, 'user');
+        userMessage.value = '';
+
+        try {
+            const response = await fetch('{{ url_for("patient.health_chatbot") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(message)}`
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            } else {
+                addMessage(data.response, 'bot');
+            }
+        } catch (error) {
+            addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+        }
+
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        const paragraphs = text.split('\n');
+        paragraphs.forEach(paragraph => {
+            if (paragraph.trim()) {
+                const p = document.createElement('p');
+                p.textContent = paragraph;
+                contentDiv.appendChild(p);
+            }
+        });
+        
+        messageDiv.appendChild(contentDiv);
+        chatMessages.appendChild(messageDiv);
+    }
+});
+</script>
+{% endblock %} 

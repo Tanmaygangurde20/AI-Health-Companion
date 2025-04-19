@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <h1 class="display-4 text-primary">🏥 Welcome</h1>
+                <p class="lead text-muted">Please login to access your medical dashboard</p>
+            </div>
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient">
+                    <h3 class="text-center text-white mb-0">
+                        <span class="medical-icon">👤</span> Login
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('main.role_login') }}" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="username" class="form-label">
+                                <span class="medical-icon">👤</span> Username
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" required 
+                                       placeholder="Enter your username">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <span class="medical-icon">🔒</span> Password
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required 
+                                       placeholder="Enter your password">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="role" class="form-label">
+                                <span class="medical-icon">👥</span> Role
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-md"></i></span>
+                                <select class="form-select" id="role" name="role" required>
+                                    <option value="" disabled selected>Select your role</option>
+                                    <option value="doctor" {% if request.args.get('role') == 'doctor' %}selected{% endif %}>
+                                        👨‍⚕️ Doctor
+                                    </option>
+                                    <option value="receptionist" {% if request.args.get('role') == 'receptionist' %}selected{% endif %}>
+                                        👩‍💼 Receptionist
+                                    </option>
+                                    <option value="patient" {% if request.args.get('role') == 'patient' %}selected{% endif %}>
+                                        🏥 Patient
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <span class="medical-icon">🔑</span> Login
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <p class="mb-0 text-muted">
+                        <span class="medical-icon">💡</span> Need help? Contact support
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add custom animation script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to form elements
+    const formElements = document.querySelectorAll('.form-control, .form-select');
+    formElements.forEach(element => {
+        element.addEventListener('focus', function() {
+            this.parentElement.classList.add('input-group-focus');
+        });
+        element.addEventListener('blur', function() {
+            this.parentElement.classList.remove('input-group-focus');
+        });
+    });
+});
+</script>
+{% endblock %} 

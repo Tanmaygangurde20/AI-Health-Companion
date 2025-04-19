@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Report - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Patient Report</h3>
+                    <a href="{{ url_for('doctor.generate_patient_report', patient_id=patient.id) }}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-file-pdf"></i> View PDF
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Patient Information -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Patient Information</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> {{ patient_data.name }}</p>
+                                <p><strong>Age:</strong> {{ patient_data.age }}</p>
+                                <p><strong>Gender:</strong> {{ patient_data.gender }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Contact:</strong> {{ patient_data.contact }}</p>
+                                <p><strong>Username:</strong> {{ patient_data.username }}</p>
+                                <p><strong>Address:</strong> {{ patient_data.address }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical History -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2">Medical History</h4>
+                        {% for follow_up in follow_ups %}
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Visit Date: {{ follow_up.visit_date.strftime('%Y-%m-%d %H:%M') }}</h5>
+                                <small class="text-muted">Doctor: Dr. {{ follow_up.doctor.name }}</small>
+                            </div>
+                            <div class="card-body">
+                                {% if follow_up.complaints %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Complaints:</h6>
+                                    <p>{{ follow_up.complaints }}</p>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.examination %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Examination:</h6>
+                                    <p>{{ follow_up.examination }}</p>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.diagnosis %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Diagnosis:</h6>
+                                    <p>{{ follow_up.diagnosis }}</p>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.treatment %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Treatment:</h6>
+                                    <p>{{ follow_up.treatment }}</p>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.medicines %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Prescribed Medicines:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Medicine</th>
+                                                    <th>Dosage</th>
+                                                    <th>Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for medicine in follow_up.medicines %}
+                                                <tr>
+                                                    <td>{{ medicine.name }}</td>
+                                                    <td>{{ medicine.dosage }}</td>
+                                                    <td>{{ medicine.notes }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.next_visit_date %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Next Visit:</h6>
+                                    <p>{{ follow_up.next_visit_date.strftime('%Y-%m-%d') }}</p>
+                                </div>
+                                {% endif %}
+
+                                {% if follow_up.notes %}
+                                <div class="mb-3">
+                                    <h6 class="text-primary">Additional Notes:</h6>
+                                    <p>{{ follow_up.notes }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Add Follow-up{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Add Follow-up for {{ patient.name }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('doctor.add_follow_up', patient_id=patient.id) }}">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="visit_date" class="form-label">Visit Date</label>
+                                <input type="date" class="form-control" id="visit_date" name="visit_date" value="{{ now.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="doctor_id" class="form-label">Doctor</label>
+                                <select class="form-select" id="doctor_id" name="doctor_id" required>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}" {% if doctor.id == current_user.doctor.id %}selected{% endif %}>
+                                        Dr. {{ doctor.name }} ({{ doctor.specialization }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="mb-3">Follow-up Details</h5>
+                            <div class="mb-3">
+                                <label for="complaints" class="form-label">Complaints</label>
+                                <textarea class="form-control" id="complaints" name="complaints" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="examination" class="form-label">Examination</label>
+                                <textarea class="form-control" id="examination" name="examination" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="diagnosis" class="form-label">Diagnosis</label>
+                                <textarea class="form-control" id="diagnosis" name="diagnosis" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="treatment" class="form-label">Treatment</label>
+                                <textarea class="form-control" id="treatment" name="treatment" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5 class="mb-3">Prescription Details</h5>
+                            <div id="medicines-container">
+                                <div class="medicine-entry card mb-3">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Medicine</label>
+                                                    <select class="form-select medicine-select" name="medicines[0][name]" required>
+                                                        <option value="">Select Medicine</option>
+                                                        <option value="new">Add New Medicine</option>
+                                                        {% for medicine in medicines %}
+                                                        <option value="{{ medicine.name }}">{{ medicine.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <input type="text" class="form-control mt-2 new-medicine-input" name="medicines[0][new_name]" placeholder="Enter new medicine name" style="display: none;">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Dosage</label>
+                                                    <input type="text" class="form-control" name="medicines[0][dosage]" placeholder="e.g., 500mg" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Notes</label>
+                                                    <input type="text" class="form-control" name="medicines[0][notes]" placeholder="e.g., Take after meals">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="mb-3">
+                                                    <label class="form-label">&nbsp;</label>
+                                                    <button type="button" class="btn btn-danger remove-medicine" style="display: none;">×</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="add-medicine">Add Another Medicine</button>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="next_visit_date" class="form-label">Next Visit Date</label>
+                                <input type="date" class="form-control" id="next_visit_date" name="next_visit_date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Follow-up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.medicine-entry {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+.remove-medicine {
+    width: 100%;
+    height: 38px;
+    padding: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('medicines-container');
+    const addButton = document.getElementById('add-medicine');
+    let medicineCount = 1;
+
+    // Add new medicine entry
+    addButton.addEventListener('click', function() {
+        const newEntry = container.firstElementChild.cloneNode(true);
+        const inputs = newEntry.querySelectorAll('input, select');
+        
+        inputs.forEach(input => {
+            const name = input.getAttribute('name');
+            if (name) {
+                input.setAttribute('name', name.replace('[0]', `[${medicineCount}]`));
+            }
+        });
+        
+        newEntry.querySelector('.remove-medicine').style.display = 'block';
+        container.appendChild(newEntry);
+        medicineCount++;
+    });
+
+    // Remove medicine entry
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-medicine')) {
+            if (container.children.length > 1) {
+                e.target.closest('.medicine-entry').remove();
+            }
+        }
+    });
+
+    // Toggle new medicine input
+    container.addEventListener('change', function(e) {
+        if (e.target.classList.contains('medicine-select')) {
+            const newMedicineInput = e.target.nextElementSibling;
+            newMedicineInput.style.display = e.target.value === 'new' ? 'block' : 'none';
+            if (e.target.value !== 'new') {
+                newMedicineInput.value = '';
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

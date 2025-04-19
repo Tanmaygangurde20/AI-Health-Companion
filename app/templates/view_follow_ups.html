@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Follow-ups for {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>Follow-ups for {{ patient.name }}</h2>
+            <a href="{{ url_for('doctor.add_follow_up', patient_id=patient.id) }}" class="btn btn-primary">
+                Add New Follow-up
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Visit Date</th>
+                                <th>Doctor</th>
+                                <th>Diagnosis</th>
+                                <th>Medicines</th>
+                                <th>Next Visit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for follow_up in follow_ups %}
+                            <tr>
+                                <td>{{ follow_up.visit_date.strftime('%Y-%m-%d') }}</td>
+                                <td>Dr. {{ follow_up.doctor.name }}</td>
+                                <td>{{ follow_up.diagnosis }}</td>
+                                <td>
+                                    {% if follow_up.medicines %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for medicine in follow_up.medicines[:2] %}
+                                            <li>
+                                                <strong>{{ medicine.name }}</strong>
+                                                {% if medicine.dosage %} - {{ medicine.dosage }}{% endif %}
+                                            </li>
+                                            {% endfor %}
+                                            {% if follow_up.medicines|length > 2 %}
+                                            <li class="text-muted">
+                                                + {{ follow_up.medicines|length - 2 }} more...
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    {% else %}
+                                        No medicines prescribed
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if follow_up.next_visit_date %}
+                                        {{ follow_up.next_visit_date.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        Not Scheduled
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('doctor.view_follow_up', follow_up_id=follow_up.id) }}" 
+                                       class="btn btn-info btn-sm">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No follow-ups found for this patient.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+    .list-unstyled {
+        margin-bottom: 0;
+    }
+    .list-unstyled li:not(:last-child) {
+        margin-bottom: 0.25rem;
+    }
+</style>
+{% endblock %} 

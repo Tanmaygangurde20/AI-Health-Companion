@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+        <h2>Welcome, Dr. {{ doctor.name }}</h2>
+            <div class="d-flex align-items-center">
+                <span class="me-3">Status: 
+                    <span class="badge {% if doctor.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ "Available" if doctor.is_available else "Unavailable" }}
+                    </span>
+                </span>
+                <form method="POST" action="{{ url_for('doctor.toggle_availability') }}" class="d-inline">
+                    <button type="submit" class="btn btn-sm {% if doctor.is_available %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                        {{ "Set Unavailable" if doctor.is_available else "Set Available" }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Your Patients</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr>
+                                <td>{{ patient.name }}</td>
+                                <td>{{ patient.age }}</td>
+                                <td>{{ patient.gender }}</td>
+                                <td>{{ patient.contact }}</td>
+                                <td>
+                                    <a href="{{ url_for('doctor.view_follow_ups', patient_id=patient.id) }}" class="btn btn-info btn-sm">View Follow-ups</a>
+                                    <a href="{{ url_for('doctor.add_follow_up', patient_id=patient.id) }}" class="btn btn-success btn-sm">Add Follow-up</a>                                    <a href="{{ url_for('doctor.generate_patient_report', patient_id=patient.id) }}" class="btn btn-primary btn-sm" target="_blank">Generate Report</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No patients assigned to you.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

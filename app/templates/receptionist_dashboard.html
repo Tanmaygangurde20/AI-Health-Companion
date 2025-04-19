@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Receptionist Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Welcome, Receptionist</h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Doctor Management -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Doctor Management</h4>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('receptionist.add_doctor') }}" class="btn btn-primary mb-3">Add New Doctor</a>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Contact</th>
+                                <th>Availability</th>
+                                <th>Patients</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doctor in doctors %}
+                            <tr>
+                                <td>{{ doctor.name }}</td>
+                                <td>{{ doctor.specialization }}</td>
+                                <td>{{ doctor.contact }}</td>
+                                <td>
+                                    <span class="badge {% if doctor.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ 'Available' if doctor.is_available else 'Unavailable' }}
+                                    </span>
+                                </td>
+                                <td>{{ doctor.patients|length }}</td>
+                                <td>
+                                    <a href="{{ url_for('receptionist.edit_doctor', doctor_id=doctor.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                    <form action="{{ url_for('receptionist.delete_doctor', doctor_id=doctor.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Management -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h4>Patient Management</h4>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('receptionist.add_patient') }}" class="btn btn-primary mb-3">Add New Patient</a>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Doctor</th>
+                                <th>Premium</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr>
+                                <td>{{ patient.name }}</td>
+                                <td>{{ patient.age }}</td>
+                                <td>{{ patient.doctor.name if patient.doctor else 'Unassigned' }}</td>
+                                <td>{{ 'Yes' if patient.is_premium else 'No' }}</td>
+                                <td>
+                                    <a href="{{ url_for('receptionist.edit_patient', patient_id=patient.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <form action="{{ url_for('receptionist.delete_patient', patient_id=patient.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this patient?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

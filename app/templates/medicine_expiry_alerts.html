@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Expiry Alerts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Medicine Expiry Alerts
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Upload a clear image of your medicine packet to check its expiry date and receive alerts.
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" class="mb-4">
+                        <div class="mb-3">
+                            <label for="medicine_image" class="form-label">Medicine Packet Image</label>
+                            <input type="file" class="form-control" id="medicine_image" name="medicine_image" 
+                                   accept="image/*" required>
+                            <div class="form-text">Supported formats: JPG, PNG, JPEG</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Upload and Analyze
+                        </button>
+                    </form>
+
+                    {% if alert_message %}
+                    <div class="analysis-results mt-4">
+                        <div class="alert alert-{{ alert_level }}">
+                            <i class="fas fa-{% if alert_level == 'danger' %}exclamation-triangle{% elif alert_level == 'warning' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>
+                            {{ alert_message }}
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Analysis Details</h5>
+                                <div class="expiry-info">
+                                    <p><strong>Expiry Date:</strong> {{ expiry_date }}</p>
+                                    <p><strong>Days Until Expiry:</strong> 
+                                        <span class="badge bg-{{ alert_level }}">
+                                            {{ days_until_expiry }} days
+                                        </span>
+                                    </p>
+                                </div>
+                                
+                                <div class="ai-analysis mt-3">
+                                    <h6>AI Analysis:</h6>
+                                    <div class="analysis-content">
+                                        {% for paragraph in analysis.split('\n') %}
+                                            {% if paragraph.strip() %}
+                                                <p>{{ paragraph }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analysis-results {
+    border-top: 1px solid #dee2e6;
+    padding-top: 20px;
+}
+
+.analysis-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.analysis-content p {
+    margin-bottom: 10px;
+}
+
+.expiry-info {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 5px 10px;
+}
+</style>
+{% endblock %} 

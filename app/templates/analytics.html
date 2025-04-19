@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">Analytics Dashboard</h2>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Doctors</h5>
+                    <h2 class="card-text">{{ stats.total_doctors }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Patients</h5>
+                    <h2 class="card-text">{{ stats.total_patients }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Premium Patients</h5>
+                    <h2 class="card-text">{{ stats.premium_patients }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor-Patient Distribution -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Doctor-Patient Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="doctorPatientChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Prescriptions by Month</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="prescriptionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Recent Activity</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recent_activity %}
+                        <tr>
+                            <td>{{ activity.date }}</td>
+                            <td>{{ activity.description }}</td>
+                            <td>{{ activity.user }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Doctor-Patient Distribution Chart
+    const doctorPatientCtx = document.getElementById('doctorPatientChart').getContext('2d');
+    new Chart(doctorPatientCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ doctor_names|tojson }},
+            datasets: [{
+                label: 'Number of Patients',
+                data: {{ patient_counts|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Prescriptions by Month Chart
+    const prescriptionCtx = document.getElementById('prescriptionChart').getContext('2d');
+    new Chart(prescriptionCtx, {
+        type: 'line',
+        data: {
+            labels: {{ months|tojson }},
+            datasets: [{
+                label: 'Number of Prescriptions',
+                data: {{ prescription_counts|tojson }},
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Follow-up Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Follow-up Details for {{ follow_up.patient.name }}</h3>
+                        <a href="{{ url_for('doctor.view_follow_ups', patient_id=follow_up.patient.id) }}" class="btn btn-secondary">
+                            Back to Follow-ups
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Visit Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Visit Date:</th>
+                                    <td>{{ follow_up.visit_date.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Doctor:</th>
+                                    <td>Dr. {{ follow_up.doctor.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Next Visit:</th>
+                                    <td>
+                                        {% if follow_up.next_visit_date %}
+                                            {{ follow_up.next_visit_date.strftime('%Y-%m-%d') }}
+                                        {% else %}
+                                            Not Scheduled
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>Medical Details</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Complaints:</label>
+                                        <p class="mb-3">{{ follow_up.complaints or 'None recorded' }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Examination:</label>
+                                        <p class="mb-3">{{ follow_up.examination or 'None recorded' }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Diagnosis:</label>
+                                        <p class="mb-3">{{ follow_up.diagnosis }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="fw-bold">Treatment:</label>
+                                        <p>{{ follow_up.treatment or 'None recorded' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>Prescribed Medicines</h5>
+                            {% if follow_up.medicines %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Medicine</th>
+                                            <th>Dosage</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for medicine in follow_up.medicines %}
+                                        <tr>
+                                            <td>{{ medicine.name }}</td>
+                                            <td>{{ medicine.dosage }}</td>
+                                            <td>{{ medicine.notes or '-' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No medicines prescribed for this follow-up.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if follow_up.notes %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Additional Notes</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    {{ follow_up.notes }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th {
+    width: 150px;
+    background-color: #f8f9fa;
+}
+.fw-bold {
+    font-weight: 600;
+}
+</style>
+{% endblock %} 

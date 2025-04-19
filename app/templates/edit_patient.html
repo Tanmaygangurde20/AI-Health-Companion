@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Patient{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Edit Patient</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('receptionist.edit_patient', patient_id=patient.id) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ patient.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" value="{{ patient.age }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="Male" {% if patient.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if patient.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if patient.gender == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="contact" name="contact" value="{{ patient.contact }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required>{{ patient.address }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doctor_id" class="form-label">Assign Doctor</label>
+                        {% if doctors %}
+                        <select class="form-select" id="doctor_id" name="doctor_id">
+                            <option value="">Select a doctor</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}" {% if patient.doctor_id == doctor.id %}selected{% endif %}>
+                                {{ doctor.name }} ({{ doctor.specialization }})
+                                {% if not doctor.is_available %}(Currently Unavailable){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            No doctors are currently available. Please try again later or contact the administrator.
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_premium" name="is_premium" {% if patient.is_premium %}checked{% endif %}>
+                        <label class="form-check-label" for="is_premium">Premium Patient</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">New Password (leave blank to keep current)</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Update Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

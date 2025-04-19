@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Health Analysis{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">AI Health Analysis</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h5>AI-Generated Health Insights</h5>
+                    <p>This analysis is based on your medical history, including prescriptions and follow-up notes.</p>
+                </div>
+                
+                <div class="analysis-content p-4 bg-light rounded">
+                    {{ analysis|safe }}
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

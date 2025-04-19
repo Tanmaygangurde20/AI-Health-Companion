@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Medication Alternatives{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-pills me-2"></i>Medication Alternatives Analysis
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="mb-4">
+                        <div class="mb-3">
+                            <label for="prescribed_medicine" class="form-label">Currently Prescribed Medicine</label>
+                            <input type="text" class="form-control" id="prescribed_medicine" name="prescribed_medicine" 
+                                   value="{{ prescribed_medicine if prescribed_medicine else '' }}" required
+                                   placeholder="Enter the name of your current medication">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="alternative_medicine" class="form-label">Alternative Medicine</label>
+                            <input type="text" class="form-control" id="alternative_medicine" name="alternative_medicine" 
+                                   value="{{ alternative_medicine if alternative_medicine else '' }}" required
+                                   placeholder="Enter the name of the alternative medication">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Analyze Alternatives
+                        </button>
+                    </form>
+
+                    {% if recommendation %}
+                    <div class="analysis-results mt-4">
+                        <h5 class="mb-3">Analysis Results</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="comparison-summary mb-3">
+                                    <h6>Medication Comparison:</h6>
+                                    <p class="mb-1"><strong>Current:</strong> {{ prescribed_medicine }}</p>
+                                    <p class="mb-1"><strong>Alternative:</strong> {{ alternative_medicine }}</p>
+                                </div>
+                                
+                                <div class="recommendation">
+                                    <h6>AI Recommendation:</h6>
+                                    <div class="recommendation-content">
+                                        {% for paragraph in recommendation.split('\n') %}
+                                            {% if paragraph.strip() %}
+                                                <p>{{ paragraph }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Important:</strong> This analysis is for informational purposes only. Always consult your doctor before making any changes to your medication.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analysis-results {
+    border-top: 1px solid #dee2e6;
+    padding-top: 20px;
+}
+
+.recommendation-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.recommendation-content p {
+    margin-bottom: 10px;
+}
+
+.comparison-summary {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %} 

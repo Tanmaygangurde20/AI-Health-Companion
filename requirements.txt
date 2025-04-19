@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-Migrate
+google-generativeai
+python-dotenv
+Werkzeug
+reportlab
+Pillow
